@@ -6,7 +6,7 @@ Algorithm from https://stackoverflow.com/questions/22583391/peak-signal-detectio
 
 import numpy as np
 import time
-import pylab
+from pylab import *
 
 import matplotlib.pyplot as plt
 
@@ -33,23 +33,32 @@ peak = PeakDetector(array=y, lag=lag, threshold=threshold, influence=influence)
 # Run algo with settings from above
 result = PeakDetector.thresholding_algo(peak)
 
-# Plot result
-pylab.subplot(211)
-pylab.plot(np.arange(1, len(y)+1), y, lw=3)
+peaktime = PeakDetector.extractpeaktime(result["signals"])
 
-pylab.plot(np.arange(1, len(y)+1),
-           result["avgFilter"], color="cyan", lw=1)
+fig, axes = plt.subplots(2, 1, sharex=True, sharey=False)
+ax = axes.ravel()
+fig.suptitle("Infiltration Spike Detection", fontsize=18)
 
-pylab.plot(np.arange(1, len(y)+1),
-           result["avgFilter"] + threshold * result["stdFilter"], color="green", lw=1)
+ax[0].plot(np.arange(1, len(y)+1), y, linewidth=3, color='k', label="Signal")
+ax[0].plot(np.arange(1, len(y)+1), result["avgFilter"], color='b', linewidth=1)
+ax[0].plot(np.arange(1, len(y)+1),
+           result["avgFilter"] + threshold * result["stdFilter"], color='g', linewidth=1)
+ax[0].plot(np.arange(1, len(y)+1),
+           result["avgFilter"] - threshold * result["stdFilter"], color='g', linewidth=1)
+ax[0].set_ylim([0, max(y)*1.2])
+ax[0].set_ylabel("Impedance", fontsize=14)
 
-pylab.plot(np.arange(1, len(y)+1),
-           result["avgFilter"] - threshold * result["stdFilter"], color="green", lw=1)
+ax[1].plot(np.arange(1, len(y)+1), result["signals"], color="r", linewidth=2)
+if peaktime is not None: 
+    ax[1].axvline(x=peaktime, linestyle='--', color='b', linewidth=1)
+    ax[1].text(peaktime+2,1.5,"Time = %.1f s" % peaktime, fontsize=10, color='b')
+ax[1].set_ylim([-2,2])
+ax[1].set_ylabel("Signal", fontsize=14)
 
-pylab.subplot(212)
-pylab.step(np.arange(1, len(y)+1), result["signals"], color="red", lw=2)
-pylab.ylim(-1.5, 1.5)
-pylab.savefig('detectedpeak.png')
+
+fig.tight_layout()
+plt.savefig("detectedpeak.png", facecolor='w', edgecolor='none')
+plt.show()
 
 
 """

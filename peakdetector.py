@@ -78,3 +78,10 @@ class PeakDetector:
             self.stdFilter[i] = np.std(self.filteredY[(i - self.lag):i])
 
         return self.signals[i]
+    
+    def extractpeaktime(signals):
+
+        for i in range(len(signals)-1):
+            if signals[i] < signals[i+1]:
+                return i+0.5
+            
