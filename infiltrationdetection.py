@@ -13,7 +13,7 @@ import matplotlib.pyplot as plt
 from peakdetector import PeakDetector
 
 
-y = np.array(np.loadtxt(fname = "data/cath1-impedance.txt"))
+y = np.array(np.loadtxt(fname = "data/thin-wire-18-infiltration-3.txt"))
 
 #lag = the lag of the moving window for smoothing
 lag = 10
