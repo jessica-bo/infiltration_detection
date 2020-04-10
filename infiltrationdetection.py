@@ -5,16 +5,16 @@ Algorithm from https://stackoverflow.com/questions/22583391/peak-signal-detectio
 """
 
 import numpy as np
-import time
-from pylab import *
-
 import matplotlib.pyplot as plt
 
 from peakdetector import PeakDetector
 
-
+#Load data from txt file
 y = np.array(np.loadtxt(fname = "data/thin-wire-18-infiltration-3.txt"))
 
+"""
+PARAMETERS
+"""
 #lag = the lag of the moving window for smoothing
 lag = 10
 #threshold = the z-score at which the algorithm signals
@@ -28,13 +28,17 @@ influence = 0.01
 Non real-time version
 
 """
+#Instantiates PeakDetector
 peak = PeakDetector(array=y, lag=lag, threshold=threshold, influence=influence)
 
-# Run algo with settings from above
+#Averaged signal of input
 result = PeakDetector.thresholding_algo(peak)
 
+#Extract time of peak (aka when signal spikes to the positive)
 peaktime = PeakDetector.extractpeaktime(result["signals"])
 
+
+#Plots
 fig, axes = plt.subplots(2, 1, sharex=True, sharey=False)
 ax = axes.ravel()
 fig.suptitle("Infiltration Spike Detection", fontsize=18)
@@ -56,14 +60,13 @@ ax[1].set_ylim([-2,2])
 ax[1].set_ylabel("Signal", fontsize=14)
 
 
-fig.tight_layout()
 plt.savefig("detectedpeak.png", facecolor='w', edgecolor='none')
 plt.show()
 
 
 """
 Real-time version
-
+>> Unfinished due to unfinished real-time data sampling pipeline
 """
 
 #y_reduced = y[0:lag]

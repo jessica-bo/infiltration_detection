@@ -22,12 +22,13 @@ class PeakDetector:
         avgFilter[self.lag - 1] = np.mean(self.y[0:self.lag])
         stdFilter[self.lag - 1] = np.std(self.y[0:self.lag])
         for i in range(self.lag, len(self.y) - 1):
+            #checks if current point deviates from average by threshold amount
             if abs(self.y[i] - avgFilter[i-1]) > self.threshold * stdFilter [i-1]:
                 if self.y[i] > avgFilter[i-1]:
                     signals[i] = 1
                 else:
                     signals[i] = -1
-    
+                #updates average by influence of current point
                 filteredY[i] = self.influence * self.y[i] + (1 - self.influence) * filteredY[i-1]
                 avgFilter[i] = np.mean(filteredY[(i-self.lag):i])
                 stdFilter[i] = np.std(filteredY[(i-self.lag):i])
@@ -80,8 +81,8 @@ class PeakDetector:
         return self.signals[i]
     
     def extractpeaktime(signals):
-
         for i in range(len(signals)-1):
+            #looks for positive increases in signal
             if signals[i] < signals[i+1]:
                 return i+0.5
             
