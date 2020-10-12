@@ -1,3 +1,4 @@
+
 import numpy as np
 
 class PeakDetector:
@@ -41,6 +42,12 @@ class PeakDetector:
         return dict(signals = np.asarray(signals),
                     avgFilter = np.asarray(avgFilter),
                     stdFilter = np.asarray(stdFilter))
+
+    def extractpeaktime(signals):
+        for i in range(len(signals)-1):
+            #looks for positive increases in signal
+            if signals[i] < signals[i+1]:
+                return i+0.5
     
     
     def realtime_thresholding_algo(self, new_value):
@@ -79,10 +86,5 @@ class PeakDetector:
             self.stdFilter[i] = np.std(self.filteredY[(i - self.lag):i])
 
         return self.signals[i]
-    
-    def extractpeaktime(signals):
-        for i in range(len(signals)-1):
-            #looks for positive increases in signal
-            if signals[i] < signals[i+1]:
-                return i+0.5
+
             

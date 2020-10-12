@@ -6,11 +6,20 @@ Algorithm from https://stackoverflow.com/questions/22583391/peak-signal-detectio
 
 import numpy as np
 import matplotlib.pyplot as plt
+from sklearn.preprocessing import StandardScaler
 
 from peakdetector import PeakDetector
 
 #Load data from txt file
 y = np.array(np.loadtxt(fname = "data/thin-wire-18-infiltration-3.txt"))
+
+#Get rid of bad measurements
+y = y[int(len(y)/3):]
+
+#Scale impedance
+scaler = StandardScaler() 
+y = scaler.fit_transform(y.reshape(-1, 1))
+x = np.arange(1, len(y)+1)
 
 """
 PARAMETERS
@@ -41,24 +50,23 @@ peaktime = PeakDetector.extractpeaktime(result["signals"])
 #Plots
 fig, axes = plt.subplots(2, 1, sharex=True, sharey=False)
 ax = axes.ravel()
-fig.suptitle("Infiltration Spike Detection", fontsize=18)
+fig.suptitle("Impedance Signal Spike", fontname='Arial')
 
-ax[0].plot(np.arange(1, len(y)+1), y, linewidth=3, color='k', label="Signal")
-ax[0].plot(np.arange(1, len(y)+1), result["avgFilter"], color='b', linewidth=1)
-ax[0].plot(np.arange(1, len(y)+1),
-           result["avgFilter"] + threshold * result["stdFilter"], color='g', linewidth=1)
-ax[0].plot(np.arange(1, len(y)+1),
-           result["avgFilter"] - threshold * result["stdFilter"], color='g', linewidth=1)
-ax[0].set_ylim([0, max(y)*1.2])
-ax[0].set_ylabel("Impedance", fontsize=14)
+impedance_signal = ax[0].plot(x, y, linewidth=3, color='k', label="Impedance")
+average = ax[0].plot(np.arange(1, len(y)+1), result["avgFilter"], color='b', linewidth=1, label="Average")
+threshold = ax[0].fill_between(x, result["avgFilter"] + threshold * result["stdFilter"], 
+                               result["avgFilter"] - threshold * result["stdFilter"], label='Threshold')
+ax[0].set_ylim([min(y)*1.2, max(y)*1.2])
+ax[0].set_ylabel("Impedance (normalized)", fontname='Arial')
+ax[0].legend()
 
-ax[1].plot(np.arange(1, len(y)+1), result["signals"], color="r", linewidth=2)
+ax[1].plot(x, result["signals"], color="r", linewidth=2)
 if peaktime is not None: 
     ax[1].axvline(x=peaktime, linestyle='--', color='b', linewidth=1)
-    ax[1].text(peaktime+2,1.5,"Time = %.1f s" % peaktime, fontsize=10, color='b')
+    ax[1].text(peaktime+2,1.5,"Infiltration time = %.1f s" % peaktime, fontname='Arial', color='b')
 ax[1].set_ylim([-2,2])
-ax[1].set_ylabel("Signal", fontsize=14)
-
+ax[1].set_ylabel("Signal", fontname='Arial')
+ax[1].set_xlabel("Time (s)", fontname='Arial')
 
 plt.savefig("detectedpeak.png", facecolor='w', edgecolor='none')
 plt.show()
